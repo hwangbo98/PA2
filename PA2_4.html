@@ -1,0 +1,122 @@
+<html>
+<body>
+<input type ="text" id= "Polygon_num" value="">
+<input type ="text" id = "xy_position" value="">
+<button onclick = "doDraw()">Draw</button>
+<button onclick = "doClear()">Clear</button>
+<br>
+<canvas id = "canvas" width = "100" height = "100" ></canvas>
+
+<script type = "text/javascript">
+
+var elem = document.getElementById('canvas');
+var context = elem.getContext('2d');
+var radian1, radian2,radian3, radian4, radian5;
+var count = 0;
+var list_rad =[];
+
+context.fillStyle = '#000'
+context.lineWidth = 1;
+
+drawPolygon();
+getLine();
+
+
+var jb_str = "1,1,40,10,80,40,40,80,5,40";
+var jb_split = jb_str.split(',');
+
+
+for(var i in jb_split){
+document.write( '<p>' + jb_2split[i] + '</p>');
+
+}
+
+
+var max = 0;
+for(var i =0 ;i<count; i++){
+    if(list_rad[i]>max){
+        max = list_rad[i];
+    }
+} // 가장 큰 각도를 구하기 위해서 사용한 것.
+
+
+
+function drawPolygon(){
+    radian1 = getAngle(1,1,40,10,80,40);
+    alert(radian1);
+    list_rad.push(radian1);
+    count++;
+
+    radian2 = getAngle(40,10,80,40,40,80);
+    alert(radian2);
+    list_rad.push(radian2);
+    count++;
+    radian3 = getAngle(80,40,40,80,5,40);
+    alert(radian3);
+    list_rad.push(radian3);
+    count++;
+    radian4 = getAngle(40,80,5,40,1,1);
+    alert(radian4);
+    list_rad.push(radian4);
+    count++;
+    radian5 = getAngle(5,40,1,1,40,10);
+    alert(radian5);
+    list_rad.push(radian5);
+    count++;
+} // 각도를 구해서 배열에 각도를 집어넣는다. 그 다음에 가장 큰 각도를 구한다.
+// 그리고 그 점이 기준점이 되어서 나머지 모든 점을 잇는 라인을 긋는다.
+function getLine(){
+    context.beginPath();
+    context.moveTo(1,1);
+    context.lineTo(40,10);
+
+    context.lineTo(80,40);
+
+    context.lineTo(40,80);
+    context.lineTo(5,40);
+    context.closePath();
+    context.stroke();
+
+}
+/*
+첫 번째 찍히는 좌표가 moveTo로 이동해야 하고 그 이후로는 lineTo가 되어야 함.
+이걸 recursive로 반복되어야 할 듯하다.
+*/
+
+function absValue(x1,y1,x2,y2,x3,y3){
+    var result1, result2;
+    result1 = Math.pow(x1-x2,2) + Math.pow(y1-y2,2);
+    result2 = Math.pow(x3-x2,2) + Math.pow(y3-y2,2);
+    return (Math.sqrt(result1) * Math.sqrt(result2)) ;
+}
+
+function getAngle(x1,y1,x2,y2,x3,y3){
+
+    var mul_dx = (x1 - x2) * (x3 - x2);
+    var mul_dy = (y1 - y2) * (y3 - y2);
+
+    var add_mul = mul_dx + mul_dy;
+    var abs2Value = absValue(x1,y1,x2,y2,x3,y3);
+
+    var cosVal ;
+    cosVal = add_mul / abs2Value ;
+
+    var theta = Math.acos(cosVal) * (180/Math.PI);
+
+    return theta;
+
+    // 세점의 내적을 구한다. x2,y2의 값이 그 각의 위치를 의미한다.
+
+
+}
+
+
+
+
+
+
+
+</script>
+
+</body>
+</html>
