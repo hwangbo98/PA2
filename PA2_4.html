@@ -1,8 +1,7 @@
-<html>
+    <html>
 <body>
 <input type ="text" id= "Polygon_num" value="">
-<input type ="text" id = "xy_position" value="">
-<button onclick = "doDraw()">Draw</button>
+<button onclick="doAssign()">assign</button>
 <button onclick = "doClear()">Clear</button>
 <br>
 <canvas id = "canvas" width = "100" height = "100" ></canvas>
@@ -13,71 +12,43 @@ var elem = document.getElementById('canvas');
 var context = elem.getContext('2d');
 var radian1, radian2,radian3, radian4, radian5;
 var count = 0;
+var cell_count = 0;
 var list_rad =[];
-
+var regex = /[+-]?\d+(?:\.\d+)?/g;
+var str;
+var match;
+var list_coordi = new Array;
+var n_polygon = 0;
+var i = 0;
+var k = 0;
+var j = 0;
+var which_point = 0 ;
 context.fillStyle = '#000'
 context.lineWidth = 1;
 
-drawPolygon();
-getLine();
 
-
-var jb_str = "1,1,40,10,80,40,40,80,5,40";
-var jb_split = jb_str.split(',');
-
-
-for(var i in jb_split){
-document.write( '<p>' + jb_2split[i] + '</p>');
-
-}
 
 
 var max = 0;
-for(var i =0 ;i<count; i++){
-    if(list_rad[i]>max){
-        max = list_rad[i];
-    }
-} // 가장 큰 각도를 구하기 위해서 사용한 것.
 
 
 
-function drawPolygon(){
-    radian1 = getAngle(1,1,40,10,80,40);
-    alert(radian1);
+
+function drawPolygon(a,count){
+    if(count !== 0){
+    radian1 = getAngle(a[i],a[i+1],a[i+2],a[i+3],a[i+4],a[i+5]);
+    //alert(radian1);
     list_rad.push(radian1);
-    count++;
+    //getLine(a[i],a[i+1],a[i+2],a[i+3]);
+    count--;
+    i++;
 
-    radian2 = getAngle(40,10,80,40,40,80);
-    alert(radian2);
-    list_rad.push(radian2);
-    count++;
-    radian3 = getAngle(80,40,40,80,5,40);
-    alert(radian3);
-    list_rad.push(radian3);
-    count++;
-    radian4 = getAngle(40,80,5,40,1,1);
-    alert(radian4);
-    list_rad.push(radian4);
-    count++;
-    radian5 = getAngle(5,40,1,1,40,10);
-    alert(radian5);
-    list_rad.push(radian5);
-    count++;
+    drawPolygon(a,count);
+    }
+
 } // 각도를 구해서 배열에 각도를 집어넣는다. 그 다음에 가장 큰 각도를 구한다.
 // 그리고 그 점이 기준점이 되어서 나머지 모든 점을 잇는 라인을 긋는다.
-function getLine(){
-    context.beginPath();
-    context.moveTo(1,1);
-    context.lineTo(40,10);
 
-    context.lineTo(80,40);
-
-    context.lineTo(40,80);
-    context.lineTo(5,40);
-    context.closePath();
-    context.stroke();
-
-}
 /*
 첫 번째 찍히는 좌표가 moveTo로 이동해야 하고 그 이후로는 lineTo가 되어야 함.
 이걸 recursive로 반복되어야 할 듯하다.
@@ -109,7 +80,72 @@ function getAngle(x1,y1,x2,y2,x3,y3){
 
 
 }
+function getLine(a,count){
+    if(count!==1){
+    context.lineTo(a[k+2],a[k+3]);
+    k=k+2;
+    count--;
 
+    getLine(a,count);
+
+    }
+} /*
+function drawLine(a,count,which_point){
+    if(cell_count!==1){
+    context.moveTo(a[which_point+2], a[which_point+3]);
+    context.lineTo(a[k+2],a[k+3]);
+    k=k+2;
+    count--;
+    //document.write(cell_count+"<br>");
+    drawLine(a,count,which_point);
+    }
+} */
+
+
+
+function doAssign(){
+  str = document.getElementById("Polygon_num").value;
+
+  while (match = regex.exec(str)) {
+    list_coordi[n_polygon] = match[0];
+    //document.write(list_coordi[n_polygon]+"<br>");
+    n_polygon++;
+  }
+  n_polygon = n_polygon/2
+  //document.write(n_polygon + "각형");
+
+  context.beginPath();
+  context.moveTo(list_coordi[0],list_coordi[1]);
+  getLine(list_coordi,n_polygon);
+  context.closePath();
+  context.stroke();
+  drawPolygon(list_coordi,n_polygon);
+
+  for(var i =0 ;i<n_polygon; i++){
+      if(list_rad[i]>max){
+          max = list_rad[i];
+          j = i*2;
+      }
+  } // 가장 큰 각도를 구하기 위해서 사용한 것.
+
+  for(var k = 0; k<(n_polygon*2); k=k+2){
+      context.beginPath();
+      context.moveTo(list_coordi[j+2], list_coordi[j+3]);
+      context.lineTo(list_coordi[k],list_coordi[k+1]);
+      context.stroke();
+  }
+
+  //context.moveTo(list_coordi[j+2],list_coordi[j+3]);
+  //context.beginPath();
+  //drawLine(list_coordi,n_polygon,j);
+  //context.stroke();
+  //document.write(list_rad +"<br>");
+
+
+}
+function doClear() {
+  context.clearRect(0, 0, canvas.width, canvas.height) ;
+}
 
 
 
